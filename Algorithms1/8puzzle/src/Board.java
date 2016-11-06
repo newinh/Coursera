@@ -15,29 +15,10 @@ public class Board {
 	
 	int blankLow;
 	int blankCol;
-	int move = 0;
 	int priority ;
 	
 	public Board(int[][] blocks){
 		dimension = blocks.length;
-		this.blocks = new int[dimension][dimension];
-		
-		for(int i = 0 ; i < dimension ; i++)
-			for(int j = 0 ; j < dimension ; j++){
-				
-				if(blocks[i][j] == 0){
-					blankLow = i;
-					blankCol = j;
-				}
-					
-				
-				this.blocks[i][j] = blocks[i][j];
-			}
-	}
-	
-	public Board(int[][] blocks, int move){
-		dimension = blocks.length;
-		this.move = move;
 		this.blocks = new int[dimension][dimension];
 		
 		for(int i = 0 ; i < dimension ; i++)
@@ -154,8 +135,8 @@ public class Board {
 	
 	public boolean equals(Object y){
 		
-		Board that = (Board) y;
 		
+		Board that = (Board) y;
 		
 		for(int i = 0 ; i < dimension ; i++)
 			for(int j = 0 ; j < dimension ; j++){

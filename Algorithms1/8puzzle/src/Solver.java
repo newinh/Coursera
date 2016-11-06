@@ -1,9 +1,6 @@
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 /**
@@ -13,85 +10,116 @@ import edu.princeton.cs.algs4.StdOut;
 public class Solver {
 	
 	int moves;
-	MinPQ<Board> MPQ;
-	MinPQ<Board> MPQ2;
+	Board initial;
 	
-	Board now;
-	Board pre;
+	MinPQ<SearchNode> pq;
+	MinPQ<SearchNode> pq_t;
 	
-	Board twin;
-	Board pre2;
+	class SearchNode implements Comparable<SearchNode>{
+		
+		Board board;
+		int moves;
+		int priority;
+		SearchNode previousNode;
+		
+		SearchNode(Board b, int m, SearchNode pre){
+			board = b;
+			moves = m;
+			priority = moves + b.manhattan();
+			previousNode = pre;
+		}
+
+		@Override
+		public int compareTo(SearchNode o) {
+			return (this.priority - o.priority);
+		}
+		
+	}
 	
-	Queue<Board> q;
-	
-	boolean isSolvable = true;
 	
 	public Solver(Board initial){
 		
 		if(initial == null)
 			throw new java.lang.NullPointerException();
 		
-		MPQ = new MinPQ<Board>(new ManCom());
-		MPQ2 = new MinPQ<Board>(new ManCom());
+		this.initial = initial;
 		
-		q = new LinkedList<Board>();
+		SearchNode node;
+		SearchNode node_t;
 		
-		now = initial;
-		pre = initial;
-		twin = now.twin();
-		pre2 = twin;
-		moves = 0;
+		pq = new MinPQ<SearchNode>();
+		pq_t = new MinPQ<SearchNode>();
 		
-		while( !now.isGoal() &&  !twin.isGoal()){
+		
+		pq.insert(new SearchNode(initial, 0, null));
+		pq_t.insert(new SearchNode(initial.twin(), 0, null));
+		
+		
+		
+		
+		while( !pq.min().board.isGoal()  && !pq_t.min().board.isGoal() ){
 			
-			moves++;
+			node = pq.delMin();
 			
-			for(Board b : now.neighbors() ){
+			for(Board b : node.board.neighbors()){
 				
-				if(!b.equals(pre)){
-					b.move = moves;
-					MPQ.insert(b);
-				}
+				if(node.moves != 0)
+				if(b.equals(node.previousNode.board))
+					continue;
+				
+				pq.insert(new SearchNode(b, node.moves+1, node));
+				
 			}
 			
-			pre = now;
-			now = MPQ.delMin();
-			q.offer(now);
 			
-			for(Board b : twin.neighbors() ){
+			node_t = pq_t.delMin();
+			
+			for(Board b : node_t.board.neighbors()){
 				
-				if( !b.equals(pre2)){
-					b.move = moves;
-					MPQ2.insert(b);
-				}
+				if(node_t.moves != 0)
+				if(b.equals(node_t.previousNode.board))
+					continue;
+				pq_t.insert(new SearchNode(b, node_t.moves+1, node_t));
+				
 			}
-			pre2 = twin;
-			twin = MPQ2.delMin();
 			
 		}
 		
-		
-		if(twin.isGoal()){
-			isSolvable = false;
-			moves = -1;
-		}
 	}
 	
 	public boolean isSolvable(){
-		return isSolvable;
+		
+		if(pq.min().board.isGoal())
+			return true;
+		else
+			return false;
 	}
 	
 	public int moves(){
-		return moves;
+		if(isSolvable())
+			return pq.min().moves;
+		else
+			return -1;
 	}
 	
 	public Iterable<Board> solution(){
 		
-		if(!isSolvable)
+		
+		if(!isSolvable())
 			return null;
 		
+		Stack<Board> stack = new Stack<Board>();
 		
-		return q;
+		SearchNode a = pq.min().previousNode;
+		
+		while(a.previousNode != null){
+			
+			stack.push(a.board);
+			a = a.previousNode;
+			
+		}
+		
+		return stack;
 	}
 	
 	public static void main(String[] args) {
@@ -119,30 +147,4 @@ public class Solver {
 	    }
 	}
 
-}
-
-class HamCom implements Comparator<Board>{
-
-	@Override
-	public int compare(Board o1, Board o2) {
-
-		if( o1.move + o1.hamming() < o2.move + o2.hamming()  )
-			return -1;
-		else
-			return 1;
-	}
-	
-}
-
-class ManCom implements Comparator<Board>{
-
-	@Override
-	public int compare(Board o1, Board o2) {
-
-		if( o1.move + o1.manhattan() < o2.move + o2.manhattan()  )
-			return -1;
-		else
-			return 1;
-	}
-	
 }
