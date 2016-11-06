@@ -9,13 +9,12 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class Solver {
 	
-	int moves;
-	Board initial;
+	private Board initial;
 	
-	MinPQ<SearchNode> pq;
-	MinPQ<SearchNode> pq_t;
+	private MinPQ<SearchNode> pq;
+	private MinPQ<SearchNode> pq_t;
 	
-	class SearchNode implements Comparable<SearchNode>{
+	private class SearchNode implements Comparable<SearchNode>{
 		
 		Board board;
 		int moves;
@@ -118,6 +117,7 @@ public class Solver {
 			a = a.previousNode;
 			
 		}
+		stack.push(initial);
 		
 		return stack;
 	}

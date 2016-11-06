@@ -1,8 +1,5 @@
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Queue;
 
 /**
  * @author HOON
@@ -11,11 +8,10 @@ import edu.princeton.cs.algs4.In;
 public class Board {
 	
 	private int dimension;
-	int[][] blocks;
+	private int[][] blocks;
 	
-	int blankLow;
-	int blankCol;
-	int priority ;
+	private int blankLow;
+	private int blankCol;
 	
 	public Board(int[][] blocks){
 		dimension = blocks.length;
@@ -151,7 +147,7 @@ public class Board {
 	
 	public Iterable<Board> neighbors(){
 		
-		Queue q = new LinkedList();
+		Queue<Board> q = new Queue<Board>();
 		
 		if(blankCol != dimension-1){
 			
@@ -168,7 +164,7 @@ public class Board {
 			
 			newBoard.blankCol++;
 			
-			q.add(newBoard);
+			q.enqueue(newBoard);
 		}
 		
 		
@@ -186,7 +182,7 @@ public class Board {
 			newBoard.blocks[blankLow][blankCol] = tmp;
 			
 			newBoard.blankCol--;
-			q.add(newBoard);
+			q.enqueue(newBoard);
 		}
 		
 		if(blankLow != dimension-1){
@@ -204,7 +200,7 @@ public class Board {
 			
 			newBoard.blankLow++;
 			
-			q.add(newBoard);
+			q.enqueue(newBoard);
 		}
 		
 		if(blankLow != 0){
@@ -222,7 +218,7 @@ public class Board {
 			
 			newBoard.blankLow--;
 			
-			q.add(newBoard);
+			q.enqueue(newBoard);
 		}
 			
 		
